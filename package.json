@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "main": "server.js",
   "scripts": {
-    "start": "nodemon backend/server.js",
+    "start": "node backend/server.js",
     "build": "cd frontend && npm install --legacy-peer-deps && npm run build"
   },
   "author": "Musa Khan",
