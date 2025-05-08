@@ -30,24 +30,27 @@ if (process.env.NODE_ENV === "production") {
   });
 }
 
-
 app.use(notFount);
 app.use(errorHandler);
 
 const PORT = process.env.PORT || 5000;
 
 const server = app.listen(PORT, console.log(`server started on port ${PORT}`));
+
 const io = require("socket.io")(server, {
   cors: {
-    pingTimeout: 60000,
-    origin: "http://localhost:5173",
+    origin: [
+      "http://localhost:5173", // Development
+      "https://your-frontend-domain.com", // Production frontend URL
+    ],
+    credentials: true,
   },
 });
+
 io.on("connection", (socket) => {
   console.log("connected to socket.io");
   socket.on("setup", (userData) => {
     socket.join(userData._id);
-
     socket.emit("connected");
   });
 

@@ -20,7 +20,9 @@ import io from "socket.io-client";
 import Lottie from "react-lottie";
 import animationData from "../animations/typing.json";
 
-const ENDPOINT = "http://localhost:5000";
+const ENDPOINT = import.meta.env.DEV
+  ? "http://localhost:5000"
+  : window.location.origin; // Dynamically use production URL in deployment
 
 var socket, selectedChatCompare;
 
@@ -74,6 +76,7 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
       });
     }
   };
+
   useEffect(() => {
     socket = io(ENDPOINT);
     socket.emit("setup", user);
@@ -85,8 +88,6 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
     socket.on("stop typing", (senderId) => {
       if (senderId !== user._id) setIsTyping(false);
     });
-
-   
   }, []);
 
   useEffect(() => {
