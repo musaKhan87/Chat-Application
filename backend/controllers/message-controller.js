@@ -32,7 +32,10 @@ const sendMessage = asyncHandler(async (req, res) => {
         await Chat.findByIdAndUpdate(req.body.chatId, {
             latestMessage: message,
         });
+
+        message.content = decryptMessage(message.content);
         res.json(message);
+        // res.json(message);
 
     } catch (error) {
         res.status(400);

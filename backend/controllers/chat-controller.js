@@ -1,6 +1,7 @@
 const asyncHandler = require("express-async-handler");
 const Chat = require("../models/chat-model");
 const User = require("../models/user-model");
+const { decryptMessage } = require("../utils/messageEncryption");
 const accessChat = asyncHandler(async (req, res) => {
   const { userId } = req.body;
 
@@ -23,7 +24,17 @@ const accessChat = asyncHandler(async (req, res) => {
     path: "latestMessage.sender",
     select: "name pic email",
   });
+  // if (isChat.length > 0) {
+  //   res.send(isChat[0]);
+// }
+  
   if (isChat.length > 0) {
+    if (isChat[0].latestMessage?.content) {
+      isChat[0].latestMessage.content = decryptMessage(
+        isChat[0].latestMessage.content,
+      );
+    }
+
     res.send(isChat[0]);
   } else {
     var chatData = {
@@ -52,11 +63,28 @@ const fetchChats = asyncHandler(async (req, res) => {
       .populate("groupAdmin", "-password")
       .populate("latestMessage")
       .sort({ updatedAt: -1 })
+      // .then(async (results) => {
+      //   results = await User.populate(results, {
+      //     path: "latestMessage.sender",
+      //     select: "name pic email",
+      //   });
+      //   res.status(200).send(results);
+      // });
       .then(async (results) => {
         results = await User.populate(results, {
           path: "latestMessage.sender",
           select: "name pic email",
         });
+
+        results = results.map((chat) => {
+          if (chat.latestMessage?.content) {
+            chat.latestMessage.content = decryptMessage(
+              chat.latestMessage.content,
+            );
+          }
+          return chat;
+        });
+
         res.status(200).send(results);
       });
   } catch (error) {

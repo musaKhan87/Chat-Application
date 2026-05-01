@@ -81,12 +81,24 @@ io.on("connection", (socket) => {
     var chat = newMessageRecieved.chat;
     if (!chat.users) return console.log("chat.users not defined");
 
+
     chat.users.forEach((user) => {
-      if (user._id == newMessageRecieved.sender._id) {
-        return;
-      }
-      socket.in(user._id).emit("message recieved", newMessageRecieved);
+      if (user._id == newMessageRecieved.sender._id) return;
+
+      const decryptedMessage = {
+        ...newMessageRecieved,
+        content: decryptMessage(newMessageRecieved.content),
+      };
+
+      socket.in(user._id).emit("message recieved", decryptedMessage);
     });
+
+    // chat.users.forEach((user) => {
+    //   if (user._id == newMessageRecieved.sender._id) {
+    //     return;
+    //   }
+    //   socket.in(user._id).emit("message recieved", newMessageRecieved);
+    // });
   });
 
   socket.on("disconnect", () => {
