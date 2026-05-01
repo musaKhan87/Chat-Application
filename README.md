@@ -1,7 +1,5 @@
 # 💬 Chat-Zone – Real-Time Chat Application
 
-![Chat App Banner](https://via.placeholder.com/800x400?text=Chat-Zone)
-
 **Live Demo:** [Chat-Zone on Render](https://chat-zone-p6gv.onrender.com) *(may take time to load)*  
 **GitHub Repository:** [Chat Application](https://github.com/musaKhan87/Chat-Application)
 

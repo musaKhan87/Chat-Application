@@ -2,6 +2,7 @@ const asyncHandler = require("express-async-handler");
 const Message = require("../models/message-model");
 const User = require("../models/user-model");
 const Chat = require("../models/chat-model");
+const { encryptMessage, decryptMessage } = require("../utils/messageEncryption");
 
 const sendMessage = asyncHandler(async (req, res) => {
     const { content, chatId } = req.body;
@@ -11,10 +12,12 @@ const sendMessage = asyncHandler(async (req, res) => {
         return res.sendStatus(400);
     }
 
+    
+
     var newMessage = {
-        sender: req.user._id,
-        content: content,
-        chat: chatId,
+      sender: req.user._id,
+      content: encryptMessage(content),
+      chat: chatId,
     };
 
     try {
@@ -39,9 +42,20 @@ const sendMessage = asyncHandler(async (req, res) => {
 
 const allMessages = asyncHandler(async (req, res) => {
     try {
-        const message = await Message.find({ chat: req.params.chatId }).populate("sender", "name pic email").populate("chat");
+        // const message = await Message.find({ chat: req.params.chatId }).populate("sender", "name pic email").populate("chat");
 
-        res.json(message)
+        // res.json(message)
+
+        const messages = await Message.find({ chat: req.params.chatId })
+          .populate("sender", "name pic email")
+          .populate("chat");
+
+        const decryptedMessages = messages.map((msg) => ({
+          ...msg._doc,
+          content: decryptMessage(msg.content),
+        }));
+
+        res.json(decryptedMessages);
     } catch (error) {
         res.status(400);
         throw new Error(error.message); 
