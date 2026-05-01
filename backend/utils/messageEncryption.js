@@ -18,17 +18,41 @@ function encryptMessage(text) {
 }
 
 function decryptMessage(encryptedText) {
-  const parts = encryptedText.split(":");
+  try {
+    if (!encryptedText || typeof encryptedText !== "string") {
+      return encryptedText;
+    }
 
-  const iv = Buffer.from(parts[0], "hex");
-  const encryptedData = parts[1];
+    // If not encrypted format, return original
+    if (!encryptedText.includes(":")) {
+      return encryptedText;
+    }
 
-  const decipher = crypto.createDecipheriv(algorithm, key, iv);
+    const parts = encryptedText.split(":");
 
-  let decrypted = decipher.update(encryptedData, "hex", "utf8");
-  decrypted += decipher.final("utf8");
+    if (parts.length !== 2) {
+      return encryptedText;
+    }
 
-  return decrypted;
+    const iv = Buffer.from(parts[0], "hex");
+
+    // AES-256-CBC requires 16-byte IV
+    if (iv.length !== 16) {
+      return encryptedText;
+    }
+
+    const encryptedData = parts[1];
+
+    const decipher = crypto.createDecipheriv(algorithm, key, iv);
+
+    let decrypted = decipher.update(encryptedData, "hex", "utf8");
+    decrypted += decipher.final("utf8");
+
+    return decrypted;
+  } catch (error) {
+    console.log("Decryption failed, returning original:", error.message);
+    return encryptedText;
+  }
 }
 
 module.exports = { encryptMessage, decryptMessage };

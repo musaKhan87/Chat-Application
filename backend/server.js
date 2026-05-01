@@ -88,7 +88,9 @@ io.on("connection", (socket) => {
 
       const decryptedMessage = {
         ...newMessageRecieved,
-        content: decryptMessage(newMessageRecieved.content),
+        content: newMessageRecieved.content
+          ? decryptMessage(newMessageRecieved.content)
+          : newMessageRecieved.content,
       };
 
       socket.in(user._id).emit("message recieved", decryptedMessage);
