@@ -1,5 +1,6 @@
 const dotenv = require("dotenv");
 dotenv.config();
+
 const express = require("express");
 const connectDb = require("./utils/db");
 const userRouter = require("./routes/user-router");
@@ -7,6 +8,7 @@ const { notFount, errorHandler } = require("./middleware/errorMiddleware");
 const chatRouter = require("./routes/chat-route");
 const { messageRouter } = require("./routes/message-route");
 const path = require("path");
+
 const app = express();
 connectDb();
 app.use(express.json());
@@ -14,6 +16,15 @@ app.use(express.json());
 app.use("/api/user", userRouter);
 app.use("/api/chat", chatRouter);
 app.use("/api/message", messageRouter);
+
+app.get("/api/health", (req, res) => {
+  res.status(200).json({
+    status: "OK",
+    message: "Chat-Zone backend is running",
+    uptime: process.uptime(),
+    timestamp: new Date(),
+  });
+});
 
 // ---------------------Deployment----------------
 const __dirname1 = path.resolve();
@@ -41,7 +52,7 @@ const io = require("socket.io")(server, {
   cors: {
     origin: [
       "http://localhost:5173", // Development
-      "https://your-frontend-domain.com", // Production frontend URL
+      "https://chat-zone-p6gv.onrender.com", // Production frontend URL
     ],
     credentials: true,
   },
