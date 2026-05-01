@@ -8,6 +8,7 @@ const { notFount, errorHandler } = require("./middleware/errorMiddleware");
 const chatRouter = require("./routes/chat-route");
 const { messageRouter } = require("./routes/message-route");
 const path = require("path");
+const { decryptMessage } = require("./utils/messageEncryption");
 
 const app = express();
 connectDb();
